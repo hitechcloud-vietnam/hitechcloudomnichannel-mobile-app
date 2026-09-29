@@ -1,0 +1,71 @@
+{
+  "cli": {
+    "version": ">= 22.6.0",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "base": {
+      "env": {
+        "BRAND": "hitechcloudomnichannel"
+      }
+    },
+    "development": {
+      "extends": "base",
+      "developmentClient": true,
+      "distribution": "internal",
+      "channel": "development",
+      "environment": "development",
+      "env": {
+        "APP_ENV": "development"
+      }
+    },
+    "preview": {
+      "extends": "base",
+      "distribution": "internal",
+      "channel": "preview",
+      "environment": "preview",
+      "env": {
+        "APP_ENV": "preview"
+      },
+      "android": {
+        "buildType": "apk"
+      }
+    },
+    "preview-testflight": {
+      "extends": "preview",
+      "distribution": "store",
+      "autoIncrement": true
+    },
+    "production": {
+      "extends": "base",
+      "autoIncrement": true,
+      "channel": "production",
+      "environment": "production",
+      "env": {
+        "APP_ENV": "production"
+      }
+    }
+  },
+  "submit": {
+    "base": {
+      "ios": {
+        "ascApiKeyPath": "./AuthKey_238L44SV57.p8",
+        "ascApiKeyId": "238L44SV57",
+        "ascApiKeyIssuerId": "a888294a-adc3-4201-a022-67fbbc4a597d",
+        "appleTeamId": "5H3UF98Q3H"
+      }
+    },
+    "preview-testflight": {
+      "extends": "base",
+      "ios": {
+        "ascAppId": "6806470556"
+      }
+    },
+    "production": {
+      "extends": "base",
+      "android": {
+        "track": "internal"
+      }
+    }
+  }
+}
