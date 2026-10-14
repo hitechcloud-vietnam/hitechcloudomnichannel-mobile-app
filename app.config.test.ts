@@ -1,8 +1,8 @@
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { loadBrand, readAppEnv, validateBrand } from './app.config';
+import config, { IOS_PERMISSION_STRINGS, loadBrand, readAppEnv, validateBrand } from './app.config';
 
 const VALID_BRAND = {
   id: 'acme',
@@ -128,5 +128,62 @@ describe('readAppEnv', () => {
 
   test('throws for an invalid value', () => {
     expect(() => readAppEnv('staging')).toThrow(/Invalid APP_ENV "staging"/);
+  });
+});
+
+describe('default hitechcloudomnichannel brand', () => {
+  const brand = loadBrand('hitechcloudomnichannel', __dirname);
+
+  test('carries the HiTechCloud identity', () => {
+    expect(brand.displayName).toBe('HiTechCloudOmnichannel');
+    expect(brand.ios.bundleIdentifier).toBe('vn.hitechcloud.omnichannel');
+    expect(brand.android.package).toBe('vn.hitechcloud.omnichannel');
+    expect(brand.colors.brand.toUpperCase()).toBe('#0B398C');
+  });
+
+  test('uses the deep-link scheme the backend trusts for social sign-in', () => {
+    // Must match the static `trustedOrigins` entry in the backend's packages/auth/src/server.ts.
+    expect(brand.scheme).toBe('hitechcloudomnichannelapp');
+  });
+
+  test.each([
+    'icon.png',
+    'splash-icon.png',
+    'android-icon-foreground.png',
+    'android-icon-background.png',
+    'android-icon-monochrome.png',
+    'notification-icon.png',
+  ])('ships brands/hitechcloudomnichannel/assets/%s', (file) => {
+    expect(existsSync(join(__dirname, 'brands', 'hitechcloudomnichannel', 'assets', file))).toBe(
+      true,
+    );
+  });
+});
+
+describe('resolved Expo config', () => {
+  test('uses the brand icon on iOS too (no Expo default icon override)', () => {
+    expect(config.icon).toBe('./brands/hitechcloudomnichannel/assets/icon.png');
+    expect(config.ios?.icon).toBeUndefined();
+  });
+
+  test('never requests the microphone', () => {
+    expect(config.android?.blockedPermissions).toContain('android.permission.RECORD_AUDIO');
+    expect(JSON.stringify(config.plugins)).not.toMatch(/NSMicrophoneUsageDescription/);
+  });
+
+  test('localizes every iOS permission prompt into Vietnamese', () => {
+    expect(Object.keys(IOS_PERMISSION_STRINGS.vi).sort()).toEqual(
+      Object.keys(IOS_PERMISSION_STRINGS.en).sort(),
+    );
+    expect(config.locales?.vi).toEqual({ ios: IOS_PERMISSION_STRINGS.vi });
+  });
+
+  test('keeps permission strings safe for InfoPlist.strings', () => {
+    // Written verbatim between double quotes, and $(PRODUCT_NAME) is not expanded there.
+    for (const strings of Object.values(IOS_PERMISSION_STRINGS)) {
+      for (const value of Object.values(strings)) {
+        expect(value).not.toMatch(/["\\]|\$\(/);
+      }
+    }
   });
 });

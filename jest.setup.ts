@@ -14,7 +14,7 @@ jest.mock('expo-constants', () => ({
         apiBaseUrl: 'https://test.invalid',
         wsUrl: 'wss://test.invalid',
         brandId: 'hitechcloudomnichannel',
-        brandScheme: 'hitechcloudomnichannelmobileapp',
+        brandScheme: 'hitechcloudomnichannelapp',
         brandColor: '#3c6df0',
       },
     },

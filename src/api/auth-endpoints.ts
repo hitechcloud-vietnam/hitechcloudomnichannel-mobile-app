@@ -132,7 +132,7 @@ export const SOCIAL_CALLBACK_URL = `${brand.brandScheme}://auth-callback`;
  * `{ provider, callbackURL }`, response `{ redirect: boolean; url: string }`.
  *
  * The returned `url` sends the user through the provider, then the backend's fixed OAuth
- * "broker" host relays back to `callbackURL`. The brand's scheme (e.g. `hitechcloudomnichannelmobileapp://`)
+ * "broker" host relays back to `callbackURL`. The brand's scheme (e.g. `hitechcloudomnichannelapp://`)
  * must be in the backend's better-auth `trustedOrigins` for every brand that can sign in.
  */
 export async function startSocialSignIn(provider: SocialProvider): Promise<string> {
