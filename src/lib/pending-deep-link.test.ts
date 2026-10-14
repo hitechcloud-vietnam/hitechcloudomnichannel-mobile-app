@@ -23,7 +23,10 @@ afterEach(() => {
 
 describe('capturePendingDeepLink / consumePendingDeepLink', () => {
   it('resolves a bare conversations/:id path to the (app) conversation route', () => {
-    const result = freshCapture('hitechcloudomnichannelmobileapp://conversations/12345', 'conversations/12345');
+    const result = freshCapture(
+      'hitechcloudomnichannelmobileapp://conversations/12345',
+      'conversations/12345',
+    );
     expect(result).toBe('/(app)/conversations/12345');
   });
 

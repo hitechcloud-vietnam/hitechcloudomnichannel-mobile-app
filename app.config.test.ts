@@ -49,10 +49,10 @@ describe('validateBrand', () => {
 
   test('accepts uppercase hex colors', () => {
     const result = validateBrand(
-      { ...VALID_BRAND, colors: { brand: '#136EF1', splashBackground: '#FFFFFF' } },
+      { ...VALID_BRAND, colors: { brand: '#0B398C', splashBackground: '#FFFFFF' } },
       'acme',
     );
-    expect(result.colors.brand).toBe('#136EF1');
+    expect(result.colors.brand).toBe('#0B398C');
   });
 
   test('allows an empty eas.projectId (no EAS project configured yet)', () => {

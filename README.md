@@ -1,6 +1,6 @@
 # hitechcloudomnichannel-mobile-app
 
-Expo + TypeScript mobile client for [HiTechCloudOmnichannel](https://hitechcloudomnichannel.io/) — the open-source omnichannel
+Expo + TypeScript mobile client for [HiTechCloudOmnichannel](https://hitechcloud.vn/) — the open-source omnichannel
 chatbot platform.
 
 ## ✨ Features

@@ -8,8 +8,8 @@ simply won't work until it's provisioned.
 
 The package name is brand- and environment-specific:
 `<brands/BRAND/brand.json .android.package><APP_ENV suffix>` (e.g.
-`com.chatconnectx.mobile.preview` for the default brand's `preview`/TEST builds,
-`com.chatconnectx.mobile` for `production` — see `app.config.ts`'s `APP_ENV_CONFIG`). **Each
+`vn.hitechcloud.omnichannel.preview` for the default brand's `preview`/TEST builds,
+`vn.hitechcloud.omnichannel` for `production` — see `app.config.ts`'s `APP_ENV_CONFIG`). **Each
 `APP_ENV` suffix needs its own entry in the Firebase project** — a single `google-services.json`
 can contain multiple package names, or you can register each as a separate Android app within the
 same Firebase project and merge the resulting config. Skipping this means push silently fails to

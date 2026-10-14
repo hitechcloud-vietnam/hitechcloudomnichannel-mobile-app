@@ -1,0 +1,21 @@
+{
+  "id": "hitechcloudomnichannel",
+  "displayName": "HiTechCloudOmnichannel",
+  "slug": "hitechcloudomnichannel-mobile-app",
+  "scheme": "hitechcloudomnichannelmobileapp",
+  "ios": {
+    "bundleIdentifier": "vn.hitechcloud.omnichannel"
+  },
+  "android": {
+    "package": "vn.hitechcloud.omnichannel",
+    "adaptiveIconBackgroundColor": "#0B398C"
+  },
+  "colors": {
+    "brand": "#0B398C",
+    "splashBackground": "#0B398C"
+  },
+  "eas": {
+    "projectId": "",
+    "owner": ""
+  }
+}
