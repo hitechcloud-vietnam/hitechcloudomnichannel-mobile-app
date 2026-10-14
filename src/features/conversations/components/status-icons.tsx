@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { Avatar } from '@/components/ui/avatar';
 import { Icon } from '@/components/ui/icon';
+import { formatClockTime } from '@/i18n/dayjs-locales';
 import { useTheme } from '@/theme/use-theme';
 
 import { botState } from '../lib/conversation-status';
@@ -30,7 +31,7 @@ export function BotStateIcon({ botEnabled, botResumeAt, size = 16 }: BotStateIco
       icon: 'clock' as const,
       color: colors.warning,
       label: botResumeAt
-        ? t('conversations.botResumesAt', { time: new Date(botResumeAt).toLocaleTimeString() })
+        ? t('conversations.botResumesAt', { time: formatClockTime(botResumeAt) })
         : t('conversations.botPaused'),
     },
     off: {

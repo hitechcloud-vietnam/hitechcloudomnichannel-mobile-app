@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import localizedFormat from 'dayjs/plugin/localizedFormat';
 
 import type { SupportedLanguage } from '@/i18n/locales';
 
@@ -69,6 +70,38 @@ function ensureDayjsLocaleLoaded(dayjsLocaleName: string): void {
   if (loadedLocales.has(dayjsLocaleName)) return;
   loadedLocales.add(dayjsLocaleName);
   dayjsLocaleLoaders[dayjsLocaleName]?.();
+}
+
+// Enables the locale-aware `L`/`LL`/`LT`/`LLL` tokens. Idempotent — dayjs skips a plugin that's
+// already installed.
+dayjs.extend(localizedFormat);
+
+/** Removes the year (and the separators/literals glued to it) from a locale's `LL` format, so a
+ * same-year date keeps that locale's own word order: `MMMM D, YYYY` → `MMMM D` (en),
+ * `D MMMM [năm] YYYY` → `D MMMM` (vi), `YYYY年M月D日` → `M月D日` (ja/zh). A bracketed literal is
+ * only dropped when it's a separate word before the year (vi `[năm]`), not when it's a suffix
+ * glued to the month (fi `MMMM[ta]`). */
+const YEAR_TOKEN_PATTERN = /(\s+\[[^\]]*\])?[\s,]*YYYY(年|년)?\.?/;
+
+/** Localized calendar date for the active dayjs locale — "5 tháng 3" / "March 5" within the
+ * current year, "5 tháng 3 năm 2025" / "March 5, 2025" otherwise. Hard-coding an English token
+ * order like `MMMM D` renders "tháng 3 5" in Vietnamese. */
+export function formatCalendarDate(date: dayjs.ConfigType, options: { withYear: boolean }): string {
+  const target = dayjs(date);
+  if (options.withYear) return target.format('LL');
+  const longDateFormat = dayjs.Ls[dayjs.locale()]?.formats?.LL ?? 'MMMM D, YYYY';
+  return target.format(longDateFormat.replace(YEAR_TOKEN_PATTERN, '').trim());
+}
+
+/** Localized clock time for the active dayjs locale ("14:07" in vi, "2:07 PM" in en). Follows the
+ * in-app language, unlike `Date#toLocaleTimeString()`, which follows the device locale. */
+export function formatClockTime(date: dayjs.ConfigType): string {
+  return dayjs(date).format('LT');
+}
+
+/** Localized date + time for the active dayjs locale ("5 tháng 3 năm 2026 14:07" in vi). */
+export function formatDateTime(date: dayjs.ConfigType): string {
+  return dayjs(date).format('LLL');
 }
 
 export function setDayjsLocale(language: SupportedLanguage): void {

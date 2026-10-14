@@ -12,6 +12,7 @@ import { SwipeableRow } from '@/components/ui/swipeable-row';
 import { Text } from '@/components/ui/text';
 import type { ConversationListItem } from '@/features/conversations/api/use-conversations-infinite';
 import { isUnread } from '@/features/conversations/lib/conversation-status';
+import { formatDateTime } from '@/i18n/dayjs-locales';
 import { useTheme } from '@/theme/use-theme';
 
 import { ChannelBadge } from './channel-badge';
@@ -65,7 +66,7 @@ export const ConversationRow = memo(function ConversationRow({
   const unread = isUnread(conversation);
   const isArchived = Boolean(conversation.archivedAt);
   const relativeTimeLabel = conversation.lastActivityAt
-    ? new Date(conversation.lastActivityAt).toLocaleString()
+    ? formatDateTime(conversation.lastActivityAt)
     : '';
 
   const accessibilityLabel = [

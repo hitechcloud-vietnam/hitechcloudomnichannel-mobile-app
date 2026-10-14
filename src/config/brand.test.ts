@@ -1,6 +1,6 @@
 const VALID_EXTRA = {
   brandId: 'hitechcloudomnichannel',
-  brandScheme: 'hitechcloudomnichannelmobileapp',
+  brandScheme: 'hitechcloudomnichannelapp',
   brandColor: '#3c6df0',
 };
 

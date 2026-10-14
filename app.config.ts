@@ -152,6 +152,39 @@ if (!process.env.JEST_WORKER_ID) {
 
 const hasEasProject = brand.eas.projectId.length > 0;
 
+/** Optional per-brand Android notification small icon (white silhouette on transparency, 96x96).
+ * Optional so a customer brand folder created before this asset existed still builds — without
+ * it, expo-notifications falls back to its generated default icon. */
+const notificationIconPath = `${assetsDir}/notification-icon.png`;
+const hasNotificationIcon = existsSync(join(__dirname, notificationIconPath));
+
+/** Android FCM credentials. On EAS Build, the `GOOGLE_SERVICES_JSON` file-type environment
+ * variable (see docs/deploy.md) holds the *path* EAS wrote the file to — it is never placed at
+ * `./google-services.json`. Locally, a gitignored `./google-services.json` at the repo root is
+ * used when present. Neither present (a clean checkout): omitted, so prebuild still works and only
+ * Android push registration is unavailable. */
+const googleServicesFile =
+  process.env.GOOGLE_SERVICES_JSON ||
+  (existsSync(join(__dirname, 'google-services.json')) ? './google-services.json' : undefined);
+
+/**
+ * iOS permission prompts. `$(PRODUCT_NAME)` is expanded by Xcode in Info.plist only — NOT inside
+ * the localized `InfoPlist.strings` files generated from `locales` below — so the localized
+ * strings name the brand directly. Microphone is deliberately not requested anywhere: the app
+ * only takes still photos (src/app/camera.tsx) and picks existing media from the library
+ * (src/features/chat/lib/pick-attachments.ts).
+ */
+export const IOS_PERMISSION_STRINGS = {
+  en: {
+    NSCameraUsageDescription: `Allow ${brand.displayName} to use your camera to take photos and send them in conversations.`,
+    NSPhotoLibraryUsageDescription: `Allow ${brand.displayName} to access your photos so you can attach them to messages.`,
+  },
+  vi: {
+    NSCameraUsageDescription: `Cho phép ${brand.displayName} sử dụng máy ảnh để chụp ảnh và gửi trong cuộc hội thoại.`,
+    NSPhotoLibraryUsageDescription: `Cho phép ${brand.displayName} truy cập thư viện ảnh để bạn đính kèm ảnh vào tin nhắn.`,
+  },
+} as const;
+
 const config: ExpoConfig = {
   name: `${brand.displayName}${envConfig.nameSuffix}`,
   slug: brand.slug,
@@ -162,12 +195,26 @@ const config: ExpoConfig = {
   userInterfaceStyle: 'automatic',
   // New Architecture is mandatory (no opt-out) as of this SDK — no `newArchEnabled` property
   // exists in the config schema to set.
+  // Per-language Info.plist strings (iOS permission prompts). Generates `<lang>.lproj/
+  // InfoPlist.strings` at prebuild; also makes iOS treat the app as Vietnamese-localized so system
+  // UI it presents (photo picker, permission alert buttons) appears in Vietnamese on vi devices.
+  locales: {
+    en: { ios: IOS_PERMISSION_STRINGS.en },
+    vi: { ios: IOS_PERMISSION_STRINGS.vi },
+  },
   ios: {
-    icon: './assets/expo.icon',
+    // No `ios.icon` override: iOS uses the brand's top-level `icon` like Android does. (The
+    // upstream template pointed this at Expo's default `assets/expo.icon` — the Expo logo — which
+    // would have shipped as the App Store icon for every brand.)
     bundleIdentifier: `${brand.ios.bundleIdentifier}${envConfig.idSuffix}`,
-    // Only OS-provided TLS/Keychain + random UUIDs — no custom crypto, so export-compliance exempt.
-    // Skips the App Store Connect "App Encryption Documentation" prompt on every upload.
-    infoPlist: { ITSAppUsesNonExemptEncryption: false },
+    infoPlist: {
+      // Only OS-provided TLS/Keychain + random UUIDs — no custom crypto, so export-compliance
+      // exempt. Skips the App Store Connect "App Encryption Documentation" prompt on every upload.
+      ITSAppUsesNonExemptEncryption: false,
+      // Lets system-provided UI follow the user's language even for languages the app bundle has
+      // no `.lproj` for (the JS layer ships 20 locales; native strings only exist for en/vi).
+      CFBundleAllowMixedLocalizations: true,
+    },
   },
   android: {
     package: `${brand.android.package}${envConfig.idSuffix}`,
@@ -178,14 +225,20 @@ const config: ExpoConfig = {
       monochromeImage: `${assetsDir}/android-icon-monochrome.png`,
     },
     predictiveBackGestureEnabled: false,
+    // Keep the Play Store permission list minimal: RECORD_AUDIO is never used (photos only, see
+    // IOS_PERMISSION_STRINGS), and SYSTEM_ALERT_WINDOW ("display over other apps") is only needed by
+    // the React Native dev menu in debug builds (which declare it in their own debug manifest).
+    blockedPermissions: [
+      'android.permission.RECORD_AUDIO',
+      'android.permission.SYSTEM_ALERT_WINDOW',
+    ],
     // Edge-to-edge display is mandatory (no opt-out) as of this SDK — no `edgeToEdgeEnabled` knob
     // exists in the Android config schema to set.
     // Required for Android FCM V1 push delivery — prerequisite: a Firebase project with this
-    // package name registered, its google-services.json downloaded to the repo root (gitignored,
-    // not committed). Conditional on the file actually existing locally: it's a per-developer/CI
-    // secret (see docs/deploy.md for the EAS file-secret setup), and an unconditional reference here
-    // fails every clean checkout's Android build/prebuild before that secret is provisioned.
-    googleServicesFile: existsSync('./google-services.json') ? './google-services.json' : undefined,
+    // package name registered. Resolved above from the `GOOGLE_SERVICES_JSON` EAS file variable or
+    // a local gitignored copy; an unconditional reference here would fail every clean checkout's
+    // Android build/prebuild before that secret is provisioned. See docs/push-notifications.md.
+    googleServicesFile,
   },
   plugins: [
     'expo-router',
@@ -204,14 +257,20 @@ const config: ExpoConfig = {
     [
       'expo-image-picker',
       {
-        photosPermission: 'Allow $(PRODUCT_NAME) to access your photos to attach them to messages.',
+        photosPermission: IOS_PERMISSION_STRINGS.en.NSPhotoLibraryUsageDescription,
+        cameraPermission: IOS_PERMISSION_STRINGS.en.NSCameraUsageDescription,
+        // `false` removes NSMicrophoneUsageDescription and blocks android RECORD_AUDIO.
+        microphonePermission: false,
       },
     ],
     [
       'expo-camera',
       {
-        cameraPermission:
-          'Allow $(PRODUCT_NAME) to access your camera to attach photos to messages.',
+        cameraPermission: IOS_PERMISSION_STRINGS.en.NSCameraUsageDescription,
+        microphonePermission: false,
+        recordAudioAndroid: false,
+        // Photo capture only — drops the ML Kit barcode-scanner dependency from the binary.
+        barcodeScannerEnabled: false,
       },
     ],
     [
@@ -226,9 +285,9 @@ const config: ExpoConfig = {
     [
       'expo-notifications',
       {
-        // No dedicated notification icon asset exists yet (Android requires a flat white
-        // silhouette, distinct from the app icon) — falls back to Expo's generated default until
-        // one is designed. `color` tints that icon with the brand color.
+        // Android requires a flat white silhouette for the status-bar icon, distinct from the
+        // full-color app icon; `color` tints it with the brand color in the notification shade.
+        ...(hasNotificationIcon ? { icon: notificationIconPath } : {}),
         color: brand.colors.brand,
       },
     ],

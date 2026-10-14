@@ -24,7 +24,7 @@ afterEach(() => {
 describe('capturePendingDeepLink / consumePendingDeepLink', () => {
   it('resolves a bare conversations/:id path to the (app) conversation route', () => {
     const result = freshCapture(
-      'hitechcloudomnichannelmobileapp://conversations/12345',
+      'hitechcloudomnichannelapp://conversations/12345',
       'conversations/12345',
     );
     expect(result).toBe('/(app)/conversations/12345');
@@ -39,12 +39,12 @@ describe('capturePendingDeepLink / consumePendingDeepLink', () => {
   });
 
   it('resolves a bare contacts/:id path to the (app) contact route', () => {
-    const result = freshCapture('hitechcloudomnichannelmobileapp://contacts/999', 'contacts/999');
+    const result = freshCapture('hitechcloudomnichannelapp://contacts/999', 'contacts/999');
     expect(result).toBe('/(app)/contacts/999');
   });
 
   it('does nothing for an unrecognized path', () => {
-    const result = freshCapture('hitechcloudomnichannelmobileapp://settings', 'settings');
+    const result = freshCapture('hitechcloudomnichannelapp://settings', 'settings');
     expect(result).toBeNull();
   });
 
@@ -56,7 +56,7 @@ describe('capturePendingDeepLink / consumePendingDeepLink', () => {
   it('consuming clears the stashed path so a later call returns null', () => {
     jest.resetModules();
     jest.doMock('expo-linking', () => ({
-      getLinkingURL: jest.fn().mockReturnValue('hitechcloudomnichannelmobileapp://conversations/1'),
+      getLinkingURL: jest.fn().mockReturnValue('hitechcloudomnichannelapp://conversations/1'),
       parse: jest.fn().mockReturnValue({ path: 'conversations/1' }),
     }));
     // eslint-disable-next-line @typescript-eslint/no-require-imports -- deliberate fresh re-require for module-state isolation
@@ -70,7 +70,7 @@ describe('capturePendingDeepLink / consumePendingDeepLink', () => {
   it('only captures once per module instance — a second call is a no-op', () => {
     jest.resetModules();
     jest.doMock('expo-linking', () => ({
-      getLinkingURL: jest.fn().mockReturnValue('hitechcloudomnichannelmobileapp://conversations/1'),
+      getLinkingURL: jest.fn().mockReturnValue('hitechcloudomnichannelapp://conversations/1'),
       parse: jest.fn().mockReturnValue({ path: 'conversations/1' }),
     }));
     // eslint-disable-next-line @typescript-eslint/no-require-imports -- deliberate fresh re-require for module-state isolation

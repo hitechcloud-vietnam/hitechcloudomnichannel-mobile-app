@@ -2,7 +2,7 @@
   "id": "hitechcloudomnichannel",
   "displayName": "HiTechCloudOmnichannel",
   "slug": "hitechcloudomnichannel-mobile-app",
-  "scheme": "hitechcloudomnichannelmobileapp",
+  "scheme": "hitechcloudomnichannelapp",
   "ios": {
     "bundleIdentifier": "vn.hitechcloud.omnichannel"
   },
