@@ -28,7 +28,7 @@ jobs:
           : "${BRANDS_REPO_TOKEN:?BRANDS_REPO_TOKEN secret is not set}"
           rm -rf "brands/${{ inputs.brand }}" /tmp/hitechcloudomnichannel-mobile-brands
           git clone --depth 1 \
-            "https://x-access-token:${BRANDS_REPO_TOKEN}@github.com/HiTechCloudOmnichannelIO/hitechcloudomnichannel-mobile-brands.git" \
+            "https://x-access-token:${BRANDS_REPO_TOKEN}@github.com/hitechcloud-vietnam/hitechcloudomnichannel-mobile-brands.git" \
             /tmp/hitechcloudomnichannel-mobile-brands
           test -f "/tmp/hitechcloudomnichannel-mobile-brands/${{ inputs.brand }}/brand.json" \
             || { echo "No brand.json for brand '${{ inputs.brand }}' in hitechcloudomnichannel-mobile-brands"; exit 1; }

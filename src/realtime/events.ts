@@ -100,7 +100,7 @@ export type RealtimeEventNotifyExportResult = {
 
 export type RealtimeEventConversationCreated = {
   eventType: typeof RealtimeEventType.conversationCreated;
-  // Full conversation row — shape owned by @hitechcloudomnichannel.io/business's ConversationModel; kept as
+  // Full conversation row — shape owned by @hitechcloudomnichannel/business's ConversationModel; kept as
   // `unknown` here to match the source package (avoids a dependency on the database schema).
   data: unknown;
 };
