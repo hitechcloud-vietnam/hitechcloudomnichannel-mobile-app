@@ -2,6 +2,7 @@ import dayjs from 'dayjs';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 
+import { formatCalendarDate } from '@/i18n/dayjs-locales';
 import { useTheme } from '@/theme/use-theme';
 
 import { Text } from './text';
@@ -27,7 +28,7 @@ export function DateSeparator({ date }: DateSeparatorProps) {
     ? t('common.today', { defaultValue: 'Today' })
     : isYesterday
       ? t('common.yesterday', { defaultValue: 'Yesterday' })
-      : target.format(isSameYear ? 'MMMM D' : 'MMMM D, YYYY');
+      : formatCalendarDate(target, { withYear: !isSameYear });
 
   return (
     <View style={styles.row}>

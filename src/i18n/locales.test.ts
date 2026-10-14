@@ -42,6 +42,12 @@ describe('resolveLocale', () => {
     expect(resolveLocale('de-AT')).toBe('de');
   });
 
+  it('maps Vietnamese device locales (vi-VN, vi_VN-style casing) to vi', () => {
+    expect(resolveLocale('vi-VN')).toBe('vi');
+    expect(resolveLocale('vi-vn')).toBe('vi');
+    expect(resolveLocale('VI')).toBe('vi');
+  });
+
   it('falls back to en for an unsupported language', () => {
     expect(resolveLocale('xx-YY')).toBe('en');
   });
