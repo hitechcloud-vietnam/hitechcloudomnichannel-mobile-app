@@ -70,4 +70,5 @@ the same codebase — see [docs/white-label.md](docs/white-label.md).
 - [Android push notifications](docs/push-notifications.md)
 - [EAS Update](docs/eas-updates.md)
 - [Deploying (TEST and production)](docs/deploy.md)
+- [Hướng dẫn phát hành lên App Store / Google Play (tiếng Việt)](docs/release-vi.md)
 - [White-label](docs/white-label.md)

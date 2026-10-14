@@ -39,7 +39,9 @@ This copies `brands/_template/` to `brands/acme/`, sets `id` to `acme` in the ne
 
 - `scheme` becomes the app's custom URL scheme (`<scheme>://auth-callback` for social sign-in,
   `<scheme>://conversations/:id` for push-notification deep links) — must be globally unique and
-  must be added to the backend's better-auth `trustedOrigins` for that customer's environment.
+  must be added to the backend's better-auth `trustedOrigins` for that customer's environment. The
+  default brand uses `hitechcloudomnichannelapp`, the entry the backend already trusts
+  (`packages/auth/src/server.ts`).
 - `colors.brand` is the only color a brand needs to supply; `brandStrong` (pressed/emphasis state)
   is derived automatically (see `src/theme/tokens.ts`).
 - Leave `eas.projectId` empty for now — step 4 fills it in.
@@ -48,8 +50,11 @@ This copies `brands/_template/` to `brands/acme/`, sets `id` to `acme` in the ne
 
 Replace every file in `brands/acme/assets/` with the customer's own art, keeping the same
 filenames: `icon.png`, `splash-icon.png`, `android-icon-foreground.png`,
-`android-icon-background.png`, `android-icon-monochrome.png`, `favicon.png`. Match the source
-files in `brands/hitechcloudomnichannel/assets/` for dimensions/format.
+`android-icon-background.png`, `android-icon-monochrome.png`, `favicon.png`, and
+`notification-icon.png` (Android status-bar icon: white silhouette on transparency, 96×96 —
+optional; omit it and expo-notifications generates a default). Match the source files in
+`brands/hitechcloudomnichannel/assets/` for dimensions/format. `icon.png` is used on both iOS and
+Android and must have no transparency (App Store requirement).
 
 ## 4. Create the EAS project
 

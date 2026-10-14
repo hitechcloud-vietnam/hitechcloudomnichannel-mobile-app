@@ -108,7 +108,14 @@ pnpm submit:prod   # eas submit --profile production (ios + android)
 Play service account) checked in — either let `eas submit` prompt interactively the first time (it
 offers to save credentials to your EAS project), or set them as environment variables
 (`EXPO_APPLE_ID`, etc. — see `eas submit --help` for the full list) before running non-interactively
-in CI.
+in CI. The one exception worth committing for the default brand is `submit.production.ios.ascAppId`
+(the numeric App Store Connect app id — not a secret): non-interactive iOS submits (the `release`
+EAS Workflow) need it. Android submits go to the `internal` track as a `draft` release, which is
+what Google Play requires until the app's first release has been published; switch
+`releaseStatus` to `completed` afterwards if you want internal releases to roll out automatically.
+
+Vietnamese, end-to-end release guide for HiTechCloud (accounts, credentials, store listings): see
+[release-vi.md](release-vi.md).
 
 ## Version bumping
 
